@@ -7,10 +7,10 @@ services:
       - POSTGRES_PASSWORD=password1
       - POSTGRES_DB=db1
     ports:
-      - "5432:5432"
+      - "5432:5432" # Ensure this port is not already in use on your host machine
     volumes:
       - postgres1_data:/var/lib/postgresql/data
-      - ./postgres1-config/init.sql:/docker-entrypoint-initdb.d/init-postgres1.sql
+      - ./postgres1-config/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   postgres2:
     image: postgres:latest
@@ -20,16 +20,18 @@ services:
       - POSTGRES_PASSWORD=password2
       - POSTGRES_DB=db2
     ports:
-      - "5433:5432"
+      - "5433:5432" # Ensure this port is not already in use on your host machine
     volumes:
       - postgres2_data:/var/lib/postgresql/data
-      - ./postgres1-config/init.sql:/docker-entrypoint-initdb.d/init-postgres1.sql
+      - ./postgres2-config/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   trino:
     image: trinodb/trino:latest
     container_name: trino
+    environment:
+      - CATALOG_MANAGEMENT=dynamic # You can edit the catalog without restarting the container
     ports:
-      - "8080:8080"
+      - "8080:8080" # Ensure this port is not already in use on your host machine
     volumes:
       - ./trino-config/catalog:/etc/trino/catalog
     depends_on:
