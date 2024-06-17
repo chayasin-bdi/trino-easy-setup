@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
-  postgres_1:
+  postgres1:
     image: postgres:latest
-    container_name: postgres_1
+    container_name: postgres1
     environment:
       - POSTGRES_USER=user1
       - POSTGRES_PASSWORD=password1
@@ -11,11 +9,12 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_1_data:/var/lib/postgresql/data
+      - postgres1_data:/var/lib/postgresql/data
+      - ./postgres1-config/init.sql:/docker-entrypoint-initdb.d/init-postgres1.sql
 
-  postgres_2:
+  postgres2:
     image: postgres:latest
-    container_name: postgres_2
+    container_name: postgres2
     environment:
       - POSTGRES_USER=user2
       - POSTGRES_PASSWORD=password2
@@ -23,7 +22,8 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_2_data:/var/lib/postgresql/data
+      - postgres2_data:/var/lib/postgresql/data
+      - ./postgres1-config/init.sql:/docker-entrypoint-initdb.d/init-postgres1.sql
 
   trino:
     image: trinodb/trino:latest
@@ -33,9 +33,9 @@ services:
     volumes:
       - ./trino-config/catalog:/etc/trino/catalog
     depends_on:
-      - postgres_1
-      - postgres_2
+      - postgres1
+      - postgres2
 
 volumes:
-  postgres_1_data:
-  postgres_2_data:
+  postgres1_data:
+  postgres2_data:
