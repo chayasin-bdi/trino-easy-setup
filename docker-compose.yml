@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres_1:
+    image: postgres:latest
+    container_name: postgres_1
+    environment:
+      - POSTGRES_USER=user1
+      - POSTGRES_PASSWORD=password1
+      - POSTGRES_DB=db1
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_1_data:/var/lib/postgresql/data
+
+  postgres_2:
+    image: postgres:latest
+    container_name: postgres_2
+    environment:
+      - POSTGRES_USER=user2
+      - POSTGRES_PASSWORD=password2
+      - POSTGRES_DB=db2
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_2_data:/var/lib/postgresql/data
+
+  trino:
+    image: trinodb/trino:latest
+    container_name: trino
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./trino-config/catalog:/etc/trino/catalog
+    depends_on:
+      - postgres_1
+      - postgres_2
+
+volumes:
+  postgres_1_data:
+  postgres_2_data:
